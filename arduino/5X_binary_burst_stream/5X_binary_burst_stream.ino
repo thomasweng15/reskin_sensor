@@ -13,8 +13,10 @@
 
 #include <Wire.h>
 #include <MLX90393.h> 
+#include <SparkFun_I2C_Mux_Arduino_Library.h> //Click here to get the library: http://librarymanager/All#SparkFun_I2C_Mux
+QWIICMUX myMux;
 
-#define Serial SERIAL_PORT_USBVIRTUAL
+//#define Serial SERIAL_PORT_USBVIRTUAL
 
 MLX90393 mlx0;
 MLX90393 mlx1;

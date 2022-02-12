@@ -13,8 +13,9 @@
 
 #include <Wire.h>
 #include <MLX90393.h> 
-
-#define Serial SERIAL_PORT_USBVIRTUAL
+#include <SparkFun_I2C_Mux_Arduino_Library.h> //Click here to get the library: http://librarymanager/All#SparkFun_I2C_Mux
+QWIICMUX myMux;
+//#define Serial SERIAL_PORT_USBVIRTUAL
 
 MLX90393 mlx0;
 MLX90393 mlx1;
@@ -33,6 +34,7 @@ uint8_t mlx1_i2c = 0x13;
 uint8_t mlx2_i2c = 0x12;
 uint8_t mlx3_i2c = 0x10;
 uint8_t mlx4_i2c = 0x11;
+byte status;
 
 void setup()
 {
@@ -46,6 +48,15 @@ void setup()
   Wire.begin();
   Wire.setClock(400000);
   delay(10);
+  if (myMux.begin() == false)
+  {
+    Serial.println("Error: Mux not detected. Freezing...");
+    while (1);
+  }
+  
+  myMux.setPort(3);
+  delay(5);
+  setup_5X_board();
   
   //start chips given address, -1 for no DRDY pin, and I2C bus object to use
   byte status = mlx0.begin(mlx0_i2c, -1, Wire);
@@ -69,6 +80,7 @@ void setup()
 
 void loop()
 {
+  myMux.setPort(3);
   //continuously read the most recent data from the data registers and save to data
   mlx0.readBurstData(data0); //Read the values from the sensor
   mlx1.readBurstData(data1); 
@@ -78,53 +90,91 @@ void loop()
 
   //write string data over serial
   Serial.print(data0.x);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data0.y);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data0.z);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data0.t);
-  Serial.print("\t");
+  Serial.print("\n");
   
   Serial.print(data1.x);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data1.y);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data1.z);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data1.t);
-  Serial.print("\t");
+  Serial.print("\n");
   
   Serial.print(data2.x);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data2.y);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data2.z);
-  Serial.print("\t");     
+  Serial.print(" ");     
   Serial.print(data2.t);
-  Serial.print("\t");
+  Serial.print("\n");
   
   Serial.print(data3.x);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data3.y);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data3.z);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data3.t);
-  Serial.print("\t");
+  Serial.print("\n");
 
   Serial.print(data4.x);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data4.y);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data4.z);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.print(data4.t);
-  Serial.print("\t");
+  Serial.print("\n");
+  Serial.print("\n");
+  Serial.print("\n");
+
   
   Serial.println();
 
   //adjust delay to achieve desired sampling rate
-  delayMicroseconds(500);
+  delayMicroseconds(1000);
 
+}
+
+void setup_5X_board()
+{
+  status = mlx0.begin(mlx0_i2c, -1, Wire);
+  Serial.print("Start status: 0x");
+  if(status < 0x10) Serial.print("0"); //Pretty output
+  Serial.println(status, BIN);
+  
+  status = mlx1.begin(mlx1_i2c, -1, Wire);
+  Serial.print("Start status: 0x");
+  if(status < 0x10) Serial.print("0"); 
+  Serial.println(status, BIN);
+
+  status = mlx2.begin(mlx2_i2c, -1, Wire);
+  Serial.print("Start status: 0x");
+  if(status < 0x10) Serial.print("0"); 
+  Serial.println(status, BIN);
+
+  status = mlx3.begin(mlx3_i2c, -1, Wire);
+  Serial.print("Start status: 0x");
+  if(status < 0x10) Serial.print("0"); 
+  Serial.println(status, BIN);
+ 
+  status = mlx4.begin(mlx4_i2c, -1, Wire);
+  Serial.print("Start status: 0x");
+  if(status < 0x10) Serial.print("0"); 
+  Serial.println(status, BIN);
+
+  //gain and digital filtering set up in the begin() function. 
+  mlx0.startBurst(0xF);
+  mlx1.startBurst(0xF);
+  mlx2.startBurst(0xF);
+  mlx3.startBurst(0xF);
+  mlx4.startBurst(0xF);
 }
