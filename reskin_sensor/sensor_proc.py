@@ -37,8 +37,8 @@ class ReSkinProcess(Process):
         Return the recorded buffer
     """
 
-    def __init__(self,sensor_settings:ReSkinSettings, 
-        chunk_size:int=10000):
+    def __init__(self,sensor_settings, 
+        chunk_size):
         """
         Parameters
         ----------
@@ -91,7 +91,7 @@ class ReSkinProcess(Process):
             self._event_is_streaming.set()
             print('Started streaming')
 
-    def start_buffering(self, overwrite:bool=False):
+    def start_buffering(self, overwrite):
         """
         Start buffering ReSkin data. Call is ignored if already buffering
 
@@ -148,7 +148,7 @@ class ReSkinProcess(Process):
         
         return samples
 
-    def get_buffer(self, timeout:float=1.0, pause_if_buffering:bool=False):
+    def get_buffer(self, timeout, pause_if_buffering):
         """
         Return the recorded buffer
         
@@ -208,10 +208,7 @@ class ReSkinProcess(Process):
                 if not is_streaming:
                     is_streaming = True
                     # Any logging or stuff you want to do when streaming has
-                    # just started should go here
-                self._last_time.value, self._last_delay.value, \
-                    self._last_reading[:] = self.sensor.get_sample()
-
+                    # just started should go here:bool=False
                 self._sample_cnt.value += 1
 
                 if self._event_is_buffering.is_set():

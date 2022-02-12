@@ -25,8 +25,8 @@ class ReSkinBase(serial.Serial):
     get_data(num_samples)
         Collects num_samples samples from sensor
     """
-    def __init__(self, num_mags:int = 1, port: str = None, baudrate: int = 115200, 
-        burst_mode:bool = True, device_id=-1) -> None:
+    def __init__(self, num_mags, port, baudrate, 
+        burst_mode, device_id):
         """
         Parameters
         ----------
